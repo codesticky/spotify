@@ -22,7 +22,8 @@ function App() {
   }, [])
   
   async function search(){
-    console.log("Search for:" + searchInput);
+    console.log("Search for:" + searchInput); 
+    
   }
 
   return (
@@ -58,6 +59,3 @@ function App() {
 }
 
 export default App;
-
-//reated by lorenz boss
-// This is a comment
