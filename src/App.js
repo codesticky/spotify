@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.css'; // Externe CSS-Datei hinzugefügt
 import { Button, Container, InputGroup, FormControl, Row, Card } from 'react-bootstrap';
 
 
@@ -25,7 +26,7 @@ function App() {
   async function search() {
     // Clear previous results
     setAlbums([]);
-
+  
     var searchParameters = {
       method: 'GET',
       headers: {
@@ -33,21 +34,23 @@ function App() {
         'Authorization': 'Bearer ' + accessToken
       }
     }
-
+  
     var artistResponse = await fetch(`https://api.spotify.com/v1/search?q=${searchInput}&type=artist`, searchParameters);
     if (artistResponse.ok) {
       var artistData = await artistResponse.json();
       if (artistData.artists && artistData.artists.items.length > 0) {
         var artistId = artistData.artists.items[0].id;
-
+        // Set the search input to the name of the first artist
+        setSearchInput(artistData.artists.items[0].name);
+  
         var searchUrl = `https://api.spotify.com/v1/artists/${artistId}/albums?limit=50`;
-
+  
         if (selectedOption === 'singles') {
           searchUrl = `https://api.spotify.com/v1/artists/${artistId}/albums?album_type=single&limit=50`;
         } else if (selectedOption === 'albums') {
           searchUrl = `https://api.spotify.com/v1/artists/${artistId}/albums?album_type=album&limit=50`;
         }
-
+  
         var albumResponse = await fetch(searchUrl, searchParameters);
         if (albumResponse.ok) {
           var albumData = await albumResponse.json();
@@ -62,66 +65,66 @@ function App() {
       console.error('Error fetching artist from Spotify');
     }
   }
+  
 
   return (
     <div className="App">
       <Container>
         <Row className="mt-4">
-          <div className="d-flex justify-content-start" style={{ width: '50%', paddingLeft: '30px' }}>
+          <div className="d-flex justify-content-start">
             <Button
               variant={selectedOption === 'singles' ? 'primary' : 'light'}
-              className="mx-1"
+              className="mx-1 button-width"
               onClick={() => {
                 setSelectedOption('singles');
                 // Clear albums when the option changes
                 setAlbums([]);
               }}
-              style={{ width: '30%' }}
             >
               Singles
             </Button>
             <Button
               variant={selectedOption === 'albums' ? 'primary' : 'light'}
-              className="mx-1"
+              className="mx-1 button-width"
               onClick={() => {
                 setSelectedOption('albums');
                 // Clear albums when the option changes
                 setAlbums([]);
               }}
-              style={{ width: '30%' }}
             >
               Albums
             </Button>
             <Button
               variant={selectedOption === 'both' ? 'primary' : 'light'}
-              className="mx-1"
+              className="mx-1 button-width"
               onClick={() => {
                 setSelectedOption('both');
                 // Clear albums when the option changes
                 setAlbums([]);
               }}
-              style={{ width: '30%' }}
             >
               Singles & Albums
             </Button>
           </div>
         </Row>
-        <Row className="mt-2" style={{ paddingLeft: '30px' }}>
-          <InputGroup className='mb-3' size='lg' style={{ width: '100%' }}>
-            <FormControl
-              placeholder='search for artist'
-              type='input'
-              onKeyPress={event => {
-                if (event.key === 'Enter') {
-                  search();
-                }
-              }}
-              onChange={event => setSearchInput(event.target.value)}
-            />
+        <Row className="mt-2">
+          <InputGroup className='mb-3-lg'>
+          <FormControl
+  placeholder='search for artist'
+  type='input'
+  value={searchInput} // Add this line to set the input value
+  onKeyPress={event => {
+    if (event.key === 'Enter') {
+      search();
+    }
+  }}
+  onChange={event => setSearchInput(event.target.value)}
+/>
+
             <Button
               variant="primary"
               onClick={search}
-              style={{ width: '150px' }} // Set the width of the search button
+              className="search-button-width"
             >
               Search
             </Button>
