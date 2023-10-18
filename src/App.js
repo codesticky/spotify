@@ -34,30 +34,40 @@ function App() {
       }
     }
 
-    var artistId = await fetch(`https://api.spotify.com/v1/search?q=${searchInput}&type=artist`, searchParameters)
-      .then(response => response.json())
-      .then(data => data.artists.items[0].id);
+    var artistResponse = await fetch(`https://api.spotify.com/v1/search?q=${searchInput}&type=artist`, searchParameters);
+    if (artistResponse.ok) {
+      var artistData = await artistResponse.json();
+      if (artistData.artists && artistData.artists.items.length > 0) {
+        var artistId = artistData.artists.items[0].id;
 
-    var searchUrl = `https://api.spotify.com/v1/artists/${artistId}/albums?limit=50`;
+        var searchUrl = `https://api.spotify.com/v1/artists/${artistId}/albums?limit=50`;
 
-    if (selectedOption === 'singles') {
-      searchUrl = `https://api.spotify.com/v1/artists/${artistId}/albums?album_type=single&limit=50`;
-    } else if (selectedOption === 'albums') {
-      searchUrl = `https://api.spotify.com/v1/artists/${artistId}/albums?album_type=album&limit=50`;
+        if (selectedOption === 'singles') {
+          searchUrl = `https://api.spotify.com/v1/artists/${artistId}/albums?album_type=single&limit=50`;
+        } else if (selectedOption === 'albums') {
+          searchUrl = `https://api.spotify.com/v1/artists/${artistId}/albums?album_type=album&limit=50`;
+        }
+
+        var albumResponse = await fetch(searchUrl, searchParameters);
+        if (albumResponse.ok) {
+          var albumData = await albumResponse.json();
+          setAlbums(albumData.items);
+        } else {
+          console.error('Error fetching albums from Spotify');
+        }
+      } else {
+        console.error('No artist found on Spotify');
+      }
+    } else {
+      console.error('Error fetching artist from Spotify');
     }
-
-    var returnedAlbums = await fetch(searchUrl, searchParameters)
-      .then(response => response.json())
-      .then(data => {
-        setAlbums(data.items);
-      })
   }
 
   return (
     <div className="App">
       <Container>
         <Row className="mt-4">
-          <div className="d-flex justify-content-start" style={{ width: '50%' }}>
+          <div className="d-flex justify-content-start" style={{ width: '50%', paddingLeft: '30px' }}>
             <Button
               variant={selectedOption === 'singles' ? 'primary' : 'light'}
               className="mx-1"
@@ -96,24 +106,27 @@ function App() {
             </Button>
           </div>
         </Row>
-        <InputGroup className='mb-3' size='lg'>
-          <FormControl
-            placeholder='search for artist'
-            type='input'
-            onKeyPress={event => {
-              if (event.key === 'Enter') {
-                search();
-              }
-            }}
-            onChange={event => setSearchInput(event.target.value)}
-          />
-          <Button
-            variant="primary"
-            onClick={search}
-          >
-            Search
-          </Button>
-        </InputGroup>
+        <Row className="mt-2" style={{ paddingLeft: '30px' }}>
+          <InputGroup className='mb-3' size='lg' style={{ width: '100%' }}>
+            <FormControl
+              placeholder='search for artist'
+              type='input'
+              onKeyPress={event => {
+                if (event.key === 'Enter') {
+                  search();
+                }
+              }}
+              onChange={event => setSearchInput(event.target.value)}
+            />
+            <Button
+              variant="primary"
+              onClick={search}
+              style={{ width: '150px' }} // Set the width of the search button
+            >
+              Search
+            </Button>
+          </InputGroup>
+        </Row>
       </Container>
       <Container>
         <Row className='mx-2 row row-cols-4'>
