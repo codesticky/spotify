@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/3efb42f8-6e5e-4bcb-bd85-515839b66407/resourceGroups/DefaultResourceGroup-CHN/providers/Microsoft.Web/sites/lorenz-spotifyapi",
+    "appService.deploySubpath": "build"
+}

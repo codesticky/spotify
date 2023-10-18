@@ -3,6 +3,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css'; // Externe CSS-Datei hinzugefügt
 import { Button, Container, InputGroup, FormControl, Row, Card } from 'react-bootstrap';
 
+const CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
+const CLIENT_SECRET = process.env.REACT_APP_SPOTIFY_CLIENT_SECRET;
+
+
 
 function App() {
   const [searchInput, setSearchInput] = useState('');
